@@ -13,18 +13,17 @@
             flex-direction: column;
             align-items: center;
             margin: 0;
-            padding: 0; /* Elimina el padding para el body */
+            padding: 0;
         }
         header {
             width: 100%;
             display: flex;
             align-items: center;
             padding: 20px;
-            background-color: #800020; /* Color guinda */
+            background-color: #800020;
             color: white;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             flex-wrap: wrap;
-            margin: 0; /* Elimina el margen para el header */
         }
         header img {
             height: 50px;
@@ -72,6 +71,37 @@
             font-size: 1.2em;
             color: #333;
         }
+        .resultado-caja {
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .resultado-si {
+            background-color: #9dfdb4;
+            color: white;
+        }
+        .resultado-no {
+            background-color: #f87b87;
+            color: white;
+        }
+        footer {
+            width: 100%;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        footer div {
+            flex: 1;
+            padding: 10px;
+            min-width: 200px;
+        }
         @media (max-width: 600px) {
             header {
                 justify-content: center;
@@ -106,10 +136,17 @@
             })
             .then(response => response.json())
             .then(data => {
+                const resultadoElement = document.getElementById('resultado');
+                resultadoElement.className = '';
                 if (data.error) {
-                    document.getElementById('resultado').innerText = 'Error: ' + data.error;
+                    resultadoElement.innerText = 'Error: ' + data.error;
                 } else {
-                    document.getElementById('resultado').innerText = 'Candidato a darse de baja?: ' + data.probabilidad_desercion;
+                    resultadoElement.innerText = 'Candidato a darse de baja?: ' + data.probabilidad_desercion;
+                    if (data.probabilidad_desercion === 'Si') {
+                        resultadoElement.classList.add('resultado-caja', 'resultado-si');
+                    } else {
+                        resultadoElement.classList.add('resultado-caja', 'resultado-no');
+                    }
                 }
             })
             .catch(error => {
@@ -167,5 +204,19 @@
         <input type="submit" value="Enviar">
     </form>
     <p id="resultado"></p>
+    <footer>
+        <div>
+            <p>Telesecundaria 763</p>
+            <p>Público / Estatal</p>
+            <p>Educacion Basica</p>
+            <p>Dirección: Calle Carretera Nacional Huejutla-orizatlan Kilometro 4 , Tepexititla Huejutla de Reyes Hidalgo CP: 43005</p>
+            <p>Zona: Rural     Turno: Matutino</p>
+            <p>CCT (Clave de Centro de Trabajo): 13DTV0763E</p>
+        </div>
+        <div>
+            <p>Teléfono: (123) 456-7890</p>
+            <p>Email: contacto@telesecundaria763.edu.mx</p>
+        </div>
+    </footer>
 </body>
 </html>
