@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicción de Deserción Estudiantil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0; /* Elimina el padding para el body */
+        }
+        header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background-color: #800020; /* Color guinda */
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            margin: 0; /* Elimina el margen para el header */
+        }
+        header img {
+            height: 50px;
+            margin-right: 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #800020;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #993333;
+        }
+        #resultado {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+        @media (max-width: 600px) {
+            header {
+                justify-content: center;
+                text-align: center;
+            }
+            header img {
+                margin-bottom: 10px;
+            }
+            header h1 {
+                font-size: 1.2em;
+            }
+            form {
+                padding: 15px;
+            }
+        }
+    </style>
+    <script>
+        function clasificarProducto(event) {
+            event.preventDefault();
+            const Trimestre3 = document.getElementById('Trimestre3').value;
+            const Lengua_materna = document.getElementById('Lengua_materna').value;
+            const Ocupacion_Jefe_Fam = document.getElementById('Ocupacion_Jefe_Fam').value;
+            const Habitantes_Hogar = document.getElementById('Habitantes_Hogar').value;
+            const Hermanos = document.getElementById('Hermanos').value;
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `Trimestre3=${Trimestre3}&Lengua_materna=${Lengua_materna}&Ocupacion_Jefe_Fam=${Ocupacion_Jefe_Fam}&Habitantes_Hogar=${Habitantes_Hogar}&Hermanos=${Hermanos}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('resultado').innerText = 'Error: ' + data.error;
+                } else {
+                    document.getElementById('resultado').innerText = 'Candidato a darse de baja?: ' + data.probabilidad_desercion;
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultado').innerText = 'Error en la solicitud.';
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <img src="images/logo_telesecundaria.png" alt="Logo">
+        <h1>Telesecundaria 763</h1>
+    </header>
+    <form id="formulario" onsubmit="clasificarProducto(event)">
+        <h2>Predicción de Deserción Estudiantil</h2>
+
+        <label for="Edad_estudiante">Calificación Trimestre 3:</label>
+        <input type="text" id="Trimestre3" name="Trimestre3" required>
+
+        <label for="Lengua_materna">Lengua Materna:</label>
+        <select id="Lengua_materna" name="Lengua_materna" required>
+            <option value="0">Español</option>
+            <option value="1">Nahuatl</option>
+        </select>
+
+        <label for="Habitantes_Hogar">Ocupacion Jefe de Familia:</label>
+        <select id="Ocupacion_Jefe_Fam" name="Ocupacion_Jefe_Fam" required>
+            <option value="2">Desempleado</option>
+            <option value="3">Independiente</option>
+            <option value="0">Agricultura</option>
+            <option value="5">Sector Publico</option>
+            <option value="4">Sector Privado</option>
+            <option value="1">Ama de Casa</option>
+        </select>
+
+        <label for="Niv_Edu_Jefe_Fam">Habitantes en el Hogar:</label>
+        <select id="Habitantes_Hogar" name="Habitantes_Hogar" required>
+            <option value="2">Dos</option>
+            <option value="4">Tres</option>
+            <option value="1">Cuatro</option>
+            <option value="0">Cinco</option>
+            <option value="3">5 o Más</option>
+        </select>
+
+        <label for="Hermanos">Hermanos:</label>
+        <select id="Hermanos" name="Hermanos" required>
+            <option value="2">Dos</option>
+            <option value="4">Tres</option>
+            <option value="1">Cuatro</option>
+            <option value="3">Cinco</option>
+            <option value="0">5 o Más</option>
+        </select>
+
+        <input type="submit" value="Enviar">
+    </form>
+    <p id="resultado"></p>
+</body>
+</html>
